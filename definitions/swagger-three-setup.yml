@@ -33,6 +33,28 @@ paths:
           $ref: '#/components/responses/404'
         '500':
           $ref: '#/components/responses/500'
+  /message:
+    post:
+      description: Endpoint to post messages into kafka
+      operationId: message
+      x-eov-operation-id: handleMessage
+      x-eov-operation-handler: message
+      requestBody:
+        description: Post message body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostMessagePayload'
+      responses:
+        '201':
+          description: Success
+        '401':
+          $ref: '#/components/responses/401'
+        '404':
+          $ref: '#/components/responses/404'
+        '500':
+          $ref: '#/components/responses/500'
 components:
   responses:
     '401':
@@ -69,14 +91,6 @@ components:
         type: string
         format: uuid
   schemas:
-    healthCheckResponse:
-      description: healthcheck OK response
-      type: object
-      properties:
-        message:
-          type: string
-          enum:
-            - OK
     NotFoundError:
       title: Not Found Error
       additionalProperties: false
@@ -119,3 +133,36 @@ components:
           type: string
         details:
           type: string
+    PostMessagePayload:
+      additionalProperties: false
+      required:
+        - topic
+        - messages
+      properties:
+        topic:
+          type: string
+          enum:
+            - 'TRANSACTIONS'
+        messages:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+              - merchantName
+              - transactionAmount
+              - transactionCategory
+            properties:
+              merchantName:
+                type: string
+                example: Uber
+              transactionAmount:
+                type: number
+                example: 15.20
+              transactionCategory:
+                type: string
+                enum:
+                  - 'Groceries'
+                  - 'Transport'
+                  - 'Eating Out'
+            
